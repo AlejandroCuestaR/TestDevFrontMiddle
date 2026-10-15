@@ -38,7 +38,7 @@ export default function TodoList() {
       <List dense>
         {items.map((todo) => (
           <ListItem key={todo.id} disableGutters>
-            <Checkbox edge="start" checked={todo.completed} disableRipple readOnly />
+            <Checkbox edge="start" checked={todo.completed} disableRipple inputProps={{ readOnly: true }} />
             <ListItemText
               primary={todo.title}
               secondary={`#${todo.id}`}

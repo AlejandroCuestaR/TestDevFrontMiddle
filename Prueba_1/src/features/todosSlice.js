@@ -54,11 +54,16 @@ const todosSlice = createSlice({
       })
       .addCase(addTodo.pending, (state) => {
         state.saving = true
+        state.error = null
       })
       .addCase(addTodo.fulfilled, (state, action) => {
         state.saving = false
-        // Lo insertamos al inicio para respetar el orden descendente.
-        state.items.unshift(action.payload)
+        // La API siempre responde id: 201, así que agregar varias tareas repetiría
+        // el id (y la "key" de React). Derivamos un id local único, mayor al máximo
+        // actual, para mantener la lista consistente y el orden descendente.
+        const maxId = state.items.reduce((m, t) => Math.max(m, t.id), 0)
+        const nuevo = { ...action.payload, id: Math.max(action.payload.id, maxId + 1) }
+        state.items.unshift(nuevo)
       })
       .addCase(addTodo.rejected, (state, action) => {
         state.saving = false

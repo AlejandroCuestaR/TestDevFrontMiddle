@@ -84,3 +84,12 @@ Vite la levanta en `http://localhost:5173`.
 ### Cómo está organizado
 
 Cada dominio tiene su propio slice con sus thunks asíncronos (`usersSlice`, `postsSlice`, `todosSlice`) y los componentes se separan entre los que leen y despachan del store y los puramente presentacionales. La respuesta del servidor al crear la tarea (`{ id: 201 }`) se combina con lo enviado y se agrega al inicio de la lista para no romper el orden.
+
+### Patrones de diseño usados
+
+- **Flux / Redux**: flujo de datos unidireccional — la UI despacha acciones, los reducers actualizan el estado y la UI reacciona.
+- **Ducks / feature-slice**: cada dominio (`users`, `posts`, `todos`) agrupa su estado, acciones, thunks y reducer en un solo archivo.
+- **Contenedor–Presentacional**: los componentes que leen/despachan del store (`UserList`, `TodoList`) van separados de los que solo pintan datos (`PostList`, `UserDetails`).
+- **Singleton**: un único `store` global compartido por toda la app mediante `<Provider>`.
+
+> Nota: si falla la carga de comentarios de un post puntual, ese post se muestra con 0 comentarios en lugar de romper toda la vista (degradación elegante).

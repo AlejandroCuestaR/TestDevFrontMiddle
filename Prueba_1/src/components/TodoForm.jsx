@@ -20,30 +20,38 @@ export default function TodoForm() {
   const [title, setTitle] = useState('')
   const [completed, setCompleted] = useState(false)
   const [done, setDone] = useState(false)
+  const [submitError, setSubmitError] = useState(null)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!title.trim()) return
 
-    // Cuerpo con los tipos correctos: { userId:int, title:string, completed:bool }
-    dispatch(addTodo({ userId, title: title.trim(), completed }))
-
-    // Reiniciamos el formulario y mostramos la confirmación.
-    setTitle('')
-    setCompleted(false)
-    setDone(true)
+    setSubmitError(null)
+    setDone(false)
+    try {
+      // Cuerpo con los tipos correctos: { userId:int, title:string, completed:bool }.
+      // .unwrap() hace que el await lance si el POST falla, para no mostrar un
+      // "éxito" falso cuando en realidad la tarea no se guardó.
+      await dispatch(addTodo({ userId, title: title.trim(), completed })).unwrap()
+      setTitle('')
+      setCompleted(false)
+      setDone(true)
+    } catch {
+      setSubmitError('No se pudo guardar la tarea. Intenta de nuevo.')
+    }
   }
 
   return (
     <form onSubmit={handleSubmit}>
       <Stack spacing={1.5}>
         <TextField
-          label="Nuevo todo"
+          label="Nueva tarea"
           size="small"
           value={title}
           onChange={(e) => {
             setTitle(e.target.value)
             setDone(false)
+            setSubmitError(null)
           }}
           fullWidth
         />
@@ -64,8 +72,9 @@ export default function TodoForm() {
           {saving ? 'Guardando…' : 'Guardar'}
         </Button>
         {done && (
-          <Alert severity="success">Todo agregado (id simulado por la API).</Alert>
+          <Alert severity="success">Tarea agregada (id simulado por la API).</Alert>
         )}
+        {submitError && <Alert severity="error">{submitError}</Alert>}
       </Stack>
     </form>
   )
