@@ -93,3 +93,14 @@ Cada dominio tiene su propio slice con sus thunks asíncronos (`usersSlice`, `po
 - **Singleton**: un único `store` global compartido por toda la app mediante `<Provider>`.
 
 > Nota: si falla la carga de comentarios de un post puntual, ese post se muestra con 0 comentarios en lugar de romper toda la vista (degradación elegante).
+
+------
+
+## Prueba 2 — Práctica SQL (`Prueba_2/`)
+
+La carpeta `Prueba_2` traía `DatosPracticaSQL.xlsx` con dos hojas: `InfoLogDial` (registro de llamadas: fecha, duración en segundos, teléfono y tipo) e `Info Costos` (costo por minuto según el tipo de llamada). El Excel no incluye un enunciado escrito, así que interpreté el ejercicio a partir de los datos: **calcular el costo de las llamadas** (minutos × costo por minuto), con totales por tipo y por mes.
+
+La solución está en [`Prueba_2/PracticaSQL.sql`](Prueba_2/PracticaSQL.sql): un script autocontenido que crea las tablas, carga los datos y al final trae las consultas de solución. Detalles de criterio:
+
+- El `Tiempo de Dialogo` está en **segundos** y la tarifa es **por minuto**, así que se factura por minuto iniciado con `CEILING(segundos/60.0)` (convención típica de telefonía; en el script queda anotado cómo usar cobro exacto por fracción).
+- Hay un tipo de llamada **"Local"** que no tiene tarifa en `Info Costos`; se maneja con `LEFT JOIN` + `ISNULL(CostoMin, 0)` para no perder esas llamadas, y una consulta extra lista los tipos sin tarifa.
